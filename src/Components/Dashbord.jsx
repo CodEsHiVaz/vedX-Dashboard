@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./Dashbord.module.css";
 const Dashbord = () => {
   const [users, SetUsers] = useState([]);
+  const [loder, setloder] = useState(false);
   useEffect(() => {
     getData().then((res) => {
       const newarr = res.map((elem) => elem);
@@ -9,6 +10,7 @@ const Dashbord = () => {
     });
   }, []);
   const getData = async () => {
+    setloder(true);
     const res = await fetch(
       `https://my-json-server.typicode.com/Ved-X/assignment/orders`
     );
@@ -17,6 +19,7 @@ const Dashbord = () => {
     for (let i = 0; i < data.length; i++) {
       data[i].date2 = converdate(data[i].date);
     }
+    setloder(false);
     return data;
   };
   const getSearchResults = async (e) => {
@@ -35,11 +38,22 @@ const Dashbord = () => {
     });
   };
   const sortHandler = (params) => {
-    const nedData =
-      params === "Asecnding"
-        ? users.sort((a, b) => +a.date2 - +b.date2)
-        : users.sort((a, b) => +b.date2 - +a.date2);
-    SetUsers([...nedData]);
+    getData().then((res) => {
+      const newarr = res.map((elem) => elem);
+      SetUsers([...newarr]);
+    });
+    if (params.length) {
+      const nedData =
+        params === "Asecnding"
+          ? users.sort((a, b) => +a.date2 - +b.date2)
+          : users.sort((a, b) => +b.date2 - +a.date2);
+      SetUsers([...nedData]);
+      // } else {
+      //   getData().then((res) => {
+      //     const newarr = res.map((elem) => elem);
+      //     SetUsers([...newarr]);
+      //   });
+    }
   };
 
   const converdate = (dateString) => {
@@ -92,44 +106,48 @@ const Dashbord = () => {
         </div>
       </div>
       <div>
-        <table>
-          <thead>
-            <tr>
-              <td>#</td>
-              <td>OrderId</td>
-              <td>Customer</td>
-              <td>Address</td>
-              <td>Product</td>
-              <td>Order date</td>
-              <td>Status</td>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length &&
-              users.map((elem, index) => {
-                return (
-                  <tr key={elem.order_id}>
-                    <td>{index + 1}</td>
-                    <td>{elem.order_id}</td>
-                    <td>{elem.customer}</td>
-                    <td>{elem.address}</td>
-                    <td>{elem.product_title}</td>
-                    <td>{elem.date}</td>
-                    <td
-                      className={
-                        (elem.status === "Completed" && styles.completed) ||
-                        (elem.status === "Delivered" && styles.deliverd) ||
-                        (elem.status === "Prepared" && styles.prepared) ||
-                        (elem.status === "Prepone" && styles.prepared)
-                      }
-                    >
-                      {elem.status}
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
+        {!loder ? (
+          <table>
+            <thead>
+              <tr>
+                <td>#</td>
+                <td>OrderId</td>
+                <td>Customer</td>
+                <td>Address</td>
+                <td>Product</td>
+                <td>Order date</td>
+                <td>Status</td>
+              </tr>
+            </thead>
+            <tbody>
+              {users.length &&
+                users.map((elem, index) => {
+                  return (
+                    <tr key={elem.order_id}>
+                      <td>{index + 1}</td>
+                      <td>{elem.order_id}</td>
+                      <td>{elem.customer}</td>
+                      <td>{elem.address}</td>
+                      <td>{elem.product_title}</td>
+                      <td>{elem.date}</td>
+                      <td
+                        className={
+                          (elem.status === "Completed" && styles.completed) ||
+                          (elem.status === "Delivered" && styles.deliverd) ||
+                          (elem.status === "Prepared" && styles.prepared) ||
+                          (elem.status === "Prepone" && styles.prepared)
+                        }
+                      >
+                        {elem.status}
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        ) : (
+          <img src="https://freefrontend.com/assets/img/css-loaders/daily-ui-20-css-loader.gif"></img>
+        )}
         <div> {!users.length && <h2> No data to show</h2>}</div>
       </div>
     </div>
