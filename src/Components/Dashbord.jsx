@@ -23,12 +23,14 @@ const Dashbord = () => {
     return data;
   };
   const getSearchResults = async (e) => {
+    setloder(true);
     const param = e.target.value;
     const res = await fetch(
       `https://my-json-server.typicode.com/Ved-X/assignment/orders/?customer_like=${param}`
     );
     const data = await res.json();
     SetUsers([...data]);
+    setloder(false);
   };
   const filterHandler = (param) => {
     getData().then((res) => {
@@ -48,11 +50,6 @@ const Dashbord = () => {
           ? users.sort((a, b) => +a.date2 - +b.date2)
           : users.sort((a, b) => +b.date2 - +a.date2);
       SetUsers([...nedData]);
-      // } else {
-      //   getData().then((res) => {
-      //     const newarr = res.map((elem) => elem);
-      //     SetUsers([...newarr]);
-      //   });
     }
   };
 
@@ -146,7 +143,10 @@ const Dashbord = () => {
             </tbody>
           </table>
         ) : (
-          <img src="https://freefrontend.com/assets/img/css-loaders/daily-ui-20-css-loader.gif"></img>
+          <img
+            src="https://freefrontend.com/assets/img/css-loaders/daily-ui-20-css-loader.gif"
+            alt="loder"
+          ></img>
         )}
         <div> {!users.length && <h2> No data to show</h2>}</div>
       </div>
